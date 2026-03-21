@@ -54,12 +54,58 @@ app.post("/signin" , (req, res) => {
 })
 
 app.post("/organization", authMiddleware, (req, res) => {
-   
+    const userId = req.userId;
+    ORGANIZATIONS.push({
+        id: ORGANIZATIONS.length + 1,
+        tittle: req.body.tittle,
+        description: req.body.description,
+        admin: userId,
+        members: []
+        
+    })
+
+    res.json({
+        message: "Organization created successfully",
+        id: ORGANIZATIONS.length - 1
+    })
 })
 
+app.post("/add-member", authMiddleware, (req, res) => {
+    const userId = req.userId;
+    const orgId = req.body.orgId;
 
+    const organization = ORGANIZATIONS.find(org => org.id === orgId);
 
+    if(!organization){
+        res.status(404).json({
+            message: "Organization not found"
+        })
+        return
+    }
 
+    if(organization.admin !== userId){
+        res.status(403).json({
+            message: "Only the admin can add members"
+        })
+        return
+    }
+
+    const memberId = req.body.memberId;
+    const member = USERS.find(user => user.id === memberId);
+
+    if(!member){
+        res.status(404).json({
+            message: "User not found"
+        })
+        return
+    }
+
+    organization.members.push(memberId);
+
+    res.json({
+        message: "Member added successfully"
+    })
+})
 
 app.listen(3000, () => {
   console.log("Server is running on port 3000");
