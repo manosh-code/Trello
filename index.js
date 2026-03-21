@@ -1,4 +1,6 @@
 const express = require("express");
+const {jwt} = require("jsonwebtoken");
+const {authMiddleware} = require("./middleware");
 
 const app = express();
 app.use(express.json());
@@ -50,6 +52,11 @@ app.post("/signin" , (req, res) => {
         token
     })
 })
+
+app.post("/organization", authMiddleware, (req, res) => {
+   
+})
+
 
 
 
